@@ -1,19 +1,20 @@
 package com.quizgame.global.exception;
 
+import com.quizgame.global.code.SystemMessageCode;
 import lombok.Getter;
 
 @Getter
 public class QuizGameException extends RuntimeException {
 
-    private final ErrorCode errorCode;
+    private final SystemMessageCode systemMessageCode;
 
-    public QuizGameException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public QuizGameException(SystemMessageCode systemMessageCode) {
+        super(systemMessageCode.getMessage());
+        this.systemMessageCode = systemMessageCode;
     }
 
-    public QuizGameException(ErrorCode errorCode, String message) {
+    public QuizGameException(SystemMessageCode systemMessageCode, String message) {
         super(message);
-        this.errorCode = errorCode;
+        this.systemMessageCode = systemMessageCode;
     }
 }
