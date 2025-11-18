@@ -17,7 +17,7 @@ public class Code {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(name = "group_code")
     private GroupCode groupCode;
 
 }
