@@ -1,7 +1,5 @@
 package com.quizgame.domain.user.service;
 
-import com.quizgame.domain.user.api.v1.dto.UserRequest;
-import com.quizgame.domain.user.domain.User;
 import com.quizgame.domain.user.repository.UserRepository;
 import com.quizgame.global.code.SystemMessageCode;
 import com.quizgame.global.exception.QuizGameException;
@@ -10,19 +8,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateUserService {
+public class CheckDuplicateUserService {
 
     private final UserRepository userRepository;
 
-    public void execute(UserRequest request) {
-        if(userRepository.existsByUserId(request.userId())){
+    public void execute(String userId) {
+        if(userRepository.existsByUserId(userId)){
             throw new QuizGameException(SystemMessageCode.USER_ID_DUPLICATE);
         }
-        userRepository.save(
-                User.builder()
-                        .userId(request.userId())
-                        .password(request.password())
-                        .name(request.name()).build()
-        );
     }
 }
