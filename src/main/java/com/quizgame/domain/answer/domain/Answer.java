@@ -1,6 +1,5 @@
 package com.quizgame.domain.answer.domain;
 
-import com.quizgame.domain.category.domain.Category;
 import com.quizgame.domain.question.domain.Question;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,10 +18,6 @@ public class Answer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private Question question;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn
-    private Category category;
 
     @Column(nullable = false)
     private String answer;

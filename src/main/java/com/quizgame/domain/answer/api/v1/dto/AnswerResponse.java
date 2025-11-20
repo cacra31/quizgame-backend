@@ -8,8 +8,6 @@ public record AnswerResponse(
         Long id,
         Long questionId,
         String questionContent,
-        Long categoryId,
-        String categoryName,
         String answer,
         int orderNo,
         String correctYn
@@ -19,8 +17,6 @@ public record AnswerResponse(
                 .id(answer.getId())
                 .questionId(answer.getQuestion().getId())
                 .questionContent(answer.getQuestion().getContent())
-                .categoryId(answer.getCategory().getId())
-                .categoryName(answer.getCategory().getName())
                 .answer(answer.getAnswer())
                 .orderNo(answer.getOrderNo())
                 .correctYn(answer.getCorrectYn())
