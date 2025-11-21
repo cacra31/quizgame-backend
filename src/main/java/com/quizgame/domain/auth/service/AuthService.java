@@ -14,7 +14,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
-    public String login(LoginRequest loginRequest) {
+    public User login(LoginRequest loginRequest) {
         User user = userRepository.findByUserId(loginRequest.userId())
                 .orElseThrow(() -> new QuizGameException(SystemMessageCode.NOT_FOUND));
 
@@ -22,6 +22,6 @@ public class AuthService {
             throw new QuizGameException(SystemMessageCode.NOT_FOUND);
         }
 
-        return "success";
+        return user;
     }
 }
