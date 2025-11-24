@@ -31,8 +31,8 @@ public class UserController {
         return ResponseEntity.ok(CommonResponse.from(SystemMessageCode.EMPTY_OK));
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<CommonResponse> register(@RequestBody UserRequest userRequest) {
+    @PostMapping("/signup")
+    public ResponseEntity<CommonResponse> signup(@RequestBody UserRequest userRequest) {
         createUserService.execute(userRequest);
         return ResponseEntity.ok(CommonResponse.from(SystemMessageCode.SAVE_OK));
     }

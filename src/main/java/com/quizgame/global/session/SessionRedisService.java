@@ -10,7 +10,7 @@ import static com.quizgame.global.session.SessionConst.SESSION_TTL;
 
 @Component
 @RequiredArgsConstructor
-public class SessionRedisStore {
+public class SessionRedisService {
 
     private final StringRedisTemplate redisTemplate;
 

@@ -2,7 +2,7 @@ package com.quizgame.global.interceptor;
 
 import com.quizgame.global.code.SystemMessageCode;
 import com.quizgame.global.exception.QuizGameException;
-import com.quizgame.global.session.SessionRedisStore;
+import com.quizgame.global.session.SessionRedisService;
 import com.quizgame.global.session.SessionUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,7 +17,7 @@ import static com.quizgame.global.session.SessionConst.LOGIN_USER;
 @RequiredArgsConstructor
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
-    private final SessionRedisStore sessionRedisStore;
+    private final SessionRedisService sessionRedisService;
 
     @Override
     public boolean preHandle(HttpServletRequest request,
@@ -37,7 +37,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
         // Redis에도 세션이 존재하는지 확인
         String sessionId = session.getId();
-        String redisValue = sessionRedisStore.getRawSessionValue(sessionId);
+        String redisValue = sessionRedisService.getRawSessionValue(sessionId);
 
         // Redis TTL 만료 = 자동 로그아웃
         if (redisValue == null) {
@@ -45,7 +45,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return false;
         }
-        sessionRedisStore.refreshTtl(sessionId);
+        sessionRedisService.refreshTtl(sessionId);
         return true;
     }
 
