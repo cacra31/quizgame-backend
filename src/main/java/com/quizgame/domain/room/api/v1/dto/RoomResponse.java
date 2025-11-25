@@ -12,12 +12,21 @@ public record RoomResponse(
         String categoryName,
         LocalDateTime createdAt
 ) {
-    public static RoomResponse from(Room room) {
+    public static RoomResponse fromEntity(Room room) {
         return new RoomResponse(
                 room.getId(),
                 room.getCategory().getId(),
                 room.getCategory().getName(),
                 room.getCreatedAt()
+        );
+    }
+
+    public static RoomResponse fromRedisVo(RoomRedisVo room) {
+        return new RoomResponse(
+                room.roomId(),
+                room.categoryId(),
+                room.categoryName(),
+                room.createdAt()
         );
     }
 }
