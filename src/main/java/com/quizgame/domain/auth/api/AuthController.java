@@ -10,11 +10,10 @@ import com.quizgame.global.session.SessionRedisService;
 import com.quizgame.global.session.SessionUser;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.quizgame.global.session.SessionConst.LOGIN_USER;
+import static com.quizgame.global.util.SessionUtil.LOGIN_USER;
 
 @RestController
 @RequestMapping("/auth")

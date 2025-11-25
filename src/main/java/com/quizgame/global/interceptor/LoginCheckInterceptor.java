@@ -11,7 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import static com.quizgame.global.session.SessionConst.LOGIN_USER;
+import static com.quizgame.global.util.SessionUtil.LOGIN_USER;
+
 
 @Component
 @RequiredArgsConstructor
