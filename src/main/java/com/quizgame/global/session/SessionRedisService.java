@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
-import static com.quizgame.global.session.SessionConst.SESSION_TTL;
+import static com.quizgame.global.util.SessionUtil.SESSION_TTL;
 
 @Component
 @RequiredArgsConstructor
