@@ -1,5 +1,6 @@
 package com.quizgame.global.util;
 
+import com.quizgame.global.session.SessionUser;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -63,6 +64,11 @@ public class SessionUtil implements Serializable {
         } else {
             return null;
         }
+    }
+
+    public static SessionUser getSessionUser() {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        return (SessionUser) requestAttributes.getAttribute(LOGIN_USER, RequestAttributes.SCOPE_SESSION);
     }
 
 }

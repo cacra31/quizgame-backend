@@ -9,7 +9,6 @@ public record RoomListResponse(
         Long roomId,
         Long categoryId,
         String categoryName,
-        String status,
         Integer currentPlayer,
         Integer maxPlayer,
         LocalDateTime createdAt

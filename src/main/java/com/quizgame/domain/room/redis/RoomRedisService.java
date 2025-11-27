@@ -1,5 +1,6 @@
 package com.quizgame.domain.room.redis;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quizgame.domain.room.api.v1.dto.RoomRedisVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RoomRedisService {
 
+    private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
 
     private static final String ROOM = "quiz:room:";
@@ -17,7 +19,8 @@ public class RoomRedisService {
 
     //방 정보
     public RoomRedisVo getRoom(Long roomId) {
-        return (RoomRedisVo) redisTemplate.opsForValue().get(ROOM + roomId);
+        Object o = redisTemplate.opsForValue().get(ROOM + roomId);
+        return o == null ? null : objectMapper.convertValue(o, RoomRedisVo.class);
     }
 
     public void setRoom(RoomRedisVo roomRedisVo) {
@@ -30,7 +33,8 @@ public class RoomRedisService {
 
     //카테고리 별 대기방
     public Long getWaitingRoom(Long categoryId) {
-        return (Long) redisTemplate.opsForValue().get(WAITING_ROOM + categoryId);
+        Number n = (Number) redisTemplate.opsForValue().get(WAITING_ROOM + categoryId);
+        return n == null ? null : n.longValue();
     }
 
     public void setWaitingRoom(Long categoryId, Long roomId) {
@@ -43,7 +47,8 @@ public class RoomRedisService {
 
     //유저 입장 방
     public Long getRoomUser(Long userUuid) {
-        return (Long) redisTemplate.opsForValue().get(ROOM_USER + userUuid);
+        Number n = (Number) redisTemplate.opsForValue().get(ROOM_USER + userUuid);
+        return n == null ? null : n.longValue();
     }
 
     public void setRoomUser(Long userUuid, Long roomId) {

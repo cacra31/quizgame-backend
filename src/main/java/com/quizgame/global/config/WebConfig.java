@@ -17,6 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(loginCheckInterceptor)
                 .addPathPatterns("/**")              // 전체 API 기본 적용
                 .excludePathPatterns(
+                        "/test/**",
                         "/auth/login",                   // 로그인 예외
                         "/auth/me",
                         "/api/v1/user/signup"     // 회원가입 예외

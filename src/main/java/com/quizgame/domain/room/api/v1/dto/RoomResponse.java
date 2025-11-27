@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record RoomResponse(
-        Long id,
+        Long roomId,
         Long categoryId,
         String categoryName,
         LocalDateTime createdAt

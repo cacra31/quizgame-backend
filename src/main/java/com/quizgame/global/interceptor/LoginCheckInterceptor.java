@@ -8,12 +8,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import static com.quizgame.global.util.SessionUtil.LOGIN_USER;
 
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LoginCheckInterceptor implements HandlerInterceptor {
@@ -24,11 +26,16 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true; // 무조건 통과
+        }
 
         HttpSession session = request.getSession(false);
         SessionUser sessionUser = null;
 
         if (session != null) {
+            log.info("current sessionId = {}", session.getId());
+            log.info("LOGIN_USER = {}", session.getAttribute(LOGIN_USER));
             sessionUser = (SessionUser) session.getAttribute(LOGIN_USER);
         }
 
