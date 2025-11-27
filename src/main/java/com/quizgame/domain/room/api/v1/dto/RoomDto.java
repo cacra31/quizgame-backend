@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Builder
-public record RoomRedisVo(
+public record RoomDto(
         Long roomId,
         Long categoryId,
         String categoryName,

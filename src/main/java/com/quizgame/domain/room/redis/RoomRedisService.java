@@ -1,7 +1,7 @@
 package com.quizgame.domain.room.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.quizgame.domain.room.api.v1.dto.RoomRedisVo;
+import com.quizgame.domain.room.api.v1.dto.RoomDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -18,13 +18,13 @@ public class RoomRedisService {
     private static final String ROOM_USER = "quiz:room:user:";
 
     //방 정보
-    public RoomRedisVo getRoom(Long roomId) {
+    public RoomDto getRoom(Long roomId) {
         Object o = redisTemplate.opsForValue().get(ROOM + roomId);
-        return o == null ? null : objectMapper.convertValue(o, RoomRedisVo.class);
+        return o == null ? null : objectMapper.convertValue(o, RoomDto.class);
     }
 
-    public void setRoom(RoomRedisVo roomRedisVo) {
-        redisTemplate.opsForValue().set(ROOM + roomRedisVo.roomId(), roomRedisVo);
+    public void setRoom(RoomDto roomDto) {
+        redisTemplate.opsForValue().set(ROOM + roomDto.roomId(), roomDto);
     }
 
     public void deleteRoom(Long roomId) {

@@ -1,6 +1,6 @@
 package com.quizgame.domain.room.service;
 
-import com.quizgame.domain.room.api.v1.dto.RoomRedisVo;
+import com.quizgame.domain.room.api.v1.dto.RoomDto;
 import com.quizgame.domain.room.redis.RoomRedisService;
 import com.quizgame.global.code.SystemMessageCode;
 import com.quizgame.global.exception.QuizGameException;
@@ -8,10 +8,8 @@ import com.quizgame.global.session.SessionUser;
 import com.quizgame.global.util.SessionUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -28,7 +26,7 @@ public class LeaveRoomService {
         if(roomId == null) {
             throw new QuizGameException(SystemMessageCode.NOT_IN_ROOM);
         }
-        RoomRedisVo room = roomRedisService.getRoom(roomId);
+        RoomDto room = roomRedisService.getRoom(roomId);
         Set<Long> users = new HashSet<>(room.users());
         users.remove(userUuid);
         roomRedisService.deleteRoomUser(userUuid);
@@ -37,7 +35,7 @@ public class LeaveRoomService {
             roomRedisService.deleteWaitingRoom(room.categoryId());
         } else {
             // 남은 유저가 있으면 방 정보 업데이트
-            RoomRedisVo updated = RoomRedisVo.builder()
+            RoomDto updated = RoomDto.builder()
                     .roomId(room.roomId())
                     .categoryId(room.categoryId())
                     .categoryName(room.categoryName())

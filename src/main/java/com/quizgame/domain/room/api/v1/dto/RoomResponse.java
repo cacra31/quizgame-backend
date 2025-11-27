@@ -21,7 +21,7 @@ public record RoomResponse(
         );
     }
 
-    public static RoomResponse fromRedisVo(RoomRedisVo room) {
+    public static RoomResponse fromRedisVo(RoomDto room) {
         return new RoomResponse(
                 room.roomId(),
                 room.categoryId(),
