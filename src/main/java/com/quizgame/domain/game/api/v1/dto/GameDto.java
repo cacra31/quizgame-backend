@@ -3,7 +3,7 @@ package com.quizgame.domain.game.api.v1.dto;
 import lombok.Builder;
 
 @Builder
-public record GameRedisVo(
+public record GameDto(
         Long gameId,
         Long roomId,
         String questionId,

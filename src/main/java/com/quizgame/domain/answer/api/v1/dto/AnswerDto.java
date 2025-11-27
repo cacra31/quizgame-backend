@@ -3,9 +3,10 @@ package com.quizgame.domain.answer.api.v1.dto;
 import lombok.Builder;
 
 @Builder
-public record AnswerRedisVo(
+public record AnswerDto(
         Long answerId,
         Long questionId,
-        String answer
+        String answer,
+        boolean correctYn
 ) {
 }
