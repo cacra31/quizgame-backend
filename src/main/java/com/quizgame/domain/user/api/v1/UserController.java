@@ -1,35 +1,22 @@
 package com.quizgame.domain.user.api.v1;
 
 import com.quizgame.domain.user.api.v1.dto.UserRequest;
-import com.quizgame.domain.user.api.v1.dto.UserResponse;
-import com.quizgame.domain.user.service.CheckDuplicateUserService;
 import com.quizgame.domain.user.service.CreateUserService;
-import com.quizgame.domain.user.service.GetUserService;
 import com.quizgame.global.code.SystemMessageCode;
 import com.quizgame.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {
 
-    private final GetUserService getUserService;
     private final CreateUserService createUserService;
-    private final CheckDuplicateUserService checkDuplicateUserService;
-
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable String userId) {
-        return ResponseEntity.ok(UserResponse.from(getUserService.byUserId(userId)));
-    }
-
-    @GetMapping("/check-duplicate")
-    public ResponseEntity<CommonResponse> checkUserIdDuplicate(String userId) {
-        checkDuplicateUserService.execute(userId);
-        return ResponseEntity.ok(CommonResponse.from(SystemMessageCode.EMPTY_OK));
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<CommonResponse> signup(@RequestBody UserRequest userRequest) {

@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.quizgame.global.constant.GlobalConst.*;
+import static com.quizgame.global.constant.RedisKey.*;
 
 @Component
 @RequiredArgsConstructor

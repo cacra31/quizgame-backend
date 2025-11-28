@@ -2,34 +2,40 @@ package com.quizgame.domain.room.service;
 
 import com.quizgame.domain.room.api.v1.dto.RoomDto;
 import com.quizgame.domain.room.redis.RoomRedisService;
+import com.quizgame.domain.user.redis.UserRedisService;
 import com.quizgame.global.code.SystemMessageCode;
 import com.quizgame.global.exception.QuizGameException;
 import com.quizgame.global.session.SessionUser;
 import com.quizgame.global.util.SessionUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.quizgame.global.constant.WebsocketTopic.ROOM_USERS_TOPIC;
 
 @Service
 @RequiredArgsConstructor
 public class LeaveRoomService {
 
     private final RoomRedisService roomRedisService;
+    private final UserRedisService userRedisService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public void execute() {
+    public Long execute() {
         SessionUser sessionUser = SessionUtil.getSessionUser();
         Long userUuid = sessionUser.id();
         // 유저가 입장한 방 확인
-        Long roomId = roomRedisService.getRoomUser(userUuid);
+        Long roomId = userRedisService.getRoomUser(userUuid);
         if(roomId == null) {
             throw new QuizGameException(SystemMessageCode.NOT_IN_ROOM);
         }
         RoomDto room = roomRedisService.getRoom(roomId);
         Set<Long> users = new HashSet<>(room.users());
         users.remove(userUuid);
-        roomRedisService.deleteRoomUser(userUuid);
+        userRedisService.deleteRoomUser(userUuid);
         if (users.isEmpty()){
             roomRedisService.deleteRoom(room.roomId());
             roomRedisService.deleteWaitingRoom(room.categoryId());
@@ -45,6 +51,9 @@ public class LeaveRoomService {
                     .build();
 
             roomRedisService.setRoom(updated);
+            // 방 유저 변경사항 브로드캐스트
+            messagingTemplate.convertAndSend(ROOM_USERS_TOPIC.formatted(room.roomId()), userRedisService.getRoomUserProfiles(room.roomId()));
         }
+        return room.roomId();
     }
 }

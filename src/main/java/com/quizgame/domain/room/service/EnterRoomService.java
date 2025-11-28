@@ -2,16 +2,19 @@ package com.quizgame.domain.room.service;
 
 import com.quizgame.domain.category.domain.Category;
 import com.quizgame.domain.category.repository.CategoryRepository;
+import com.quizgame.domain.question.service.GenerateQuestionService;
 import com.quizgame.domain.room.api.v1.dto.RoomDto;
 import com.quizgame.domain.room.api.v1.dto.RoomRequest;
 import com.quizgame.domain.room.redis.RoomRedisService;
 import com.quizgame.domain.room.scheduler.RoomScheduler;
+import com.quizgame.domain.user.redis.UserRedisService;
 import com.quizgame.global.code.SystemMessageCode;
 import com.quizgame.global.exception.QuizGameException;
 import com.quizgame.global.redis.RedisSequenceService;
 import com.quizgame.global.session.SessionUser;
 import com.quizgame.global.util.SessionUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static com.quizgame.global.constant.GlobalConst.MAX_PLAYER;
+import static com.quizgame.global.constant.WebsocketTopic.ROOM_USERS_TOPIC;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +32,15 @@ public class EnterRoomService {
     private final RoomRedisService roomRedisService;
     private final RedisSequenceService redisSequenceService;
     private final RoomScheduler roomScheduler;
+    private final GenerateQuestionService generateQuestionService;
+    private final UserRedisService userRedisService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    public RoomDto execute(RoomRequest request) {
+    public Long execute(RoomRequest request) {
         SessionUser sessionUser = SessionUtil.getSessionUser();
         Long userUuid = sessionUser.id();
         // 레디스에서 다른 방에 유저가 입장해있는 지 확인
-        if (roomRedisService.getRoomUser(userUuid) != null) {
+        if (userRedisService.getRoomUser(userUuid) != null) {
             throw new QuizGameException(SystemMessageCode.ALREADY_IN_ROOM);
         }
 
@@ -65,6 +72,8 @@ public class EnterRoomService {
             roomRedisService.setWaitingRoom(category.getId(), room.roomId());
             // 60초 뒤 시작 Task 예약
             roomScheduler.registerStartTask(room.roomId(), room.createdAt());
+            // 문제 생성
+            generateQuestionService.generateQuestion(room);
         } else {
             // 이미 방 있을 경우 최대인원 확인
             Set<Long> users = new HashSet<>(room.users());
@@ -88,8 +97,12 @@ public class EnterRoomService {
                     .build();
             roomRedisService.setRoom(room);
         }
+        // 유저정보 캐싱
+        userRedisService.cacheUserProfile(sessionUser);
         // 유저 입장정보 레디스에 저장
-        roomRedisService.setRoomUser(userUuid, room.roomId());
-        return room;
+        userRedisService.setRoomUser(userUuid, room.roomId());
+        // 방 유저 변경사항 브로드캐스트
+        messagingTemplate.convertAndSend(ROOM_USERS_TOPIC.formatted(room.roomId()), userRedisService.getRoomUserProfiles(room.roomId()));
+        return room.roomId();
     }
 }
