@@ -89,7 +89,6 @@ public class GenerateQuestionService {
             );
             questionRedisService.setQuestions(roomDto.roomId(), questions);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
             throw new QuizGameException(SystemMessageCode.INTERNAL_SERVER_ERROR);
         }
     }

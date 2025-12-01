@@ -15,8 +15,6 @@ public class RoomRedisService {
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Object> redisTemplate;
 
-
-
     //방 정보
     public RoomDto getRoom(Long roomId) {
         Object o = redisTemplate.opsForValue().get(ROOM.formatted(roomId));

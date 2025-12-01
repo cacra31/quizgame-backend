@@ -32,7 +32,7 @@ public class RoomController {
     private final GetRoomService getRoomService;
 
     @GetMapping("/{roomId}")
-    public ResponseEntity<RoomResponse> roomList(@PathVariable Long roomId) {
+    public ResponseEntity<RoomResponse> roomInfo(@PathVariable Long roomId) {
         log.info("=== /api/v1/room/{roomId} ===");
         return ResponseEntity.ok(getRoomService.execute(roomId));
     }
