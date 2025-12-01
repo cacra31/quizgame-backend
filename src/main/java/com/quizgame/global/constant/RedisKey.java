@@ -16,4 +16,7 @@ public abstract class RedisKey {
     public static final String USER = "quiz:user:%d"; // 유저정보
     public static final String ROOM_USER = "quiz:user:%d:room";  //유저입장 방 정보
 
+    //Question
+    public static final String QUESTION_KEY = "quiz:question:room:%d";
+
 }

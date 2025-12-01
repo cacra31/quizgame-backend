@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static com.quizgame.global.constant.RedisKey.QUESTION_KEY;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -18,19 +20,17 @@ public class QuestionRedisService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final ObjectMapper objectMapper;
 
-    private static final String QUESTION_KEY = "quiz:question:room:";
-
     public List<QuestionDto> getQuestions(Long roomId) {
-        Object o = redisTemplate.opsForValue().get(QUESTION_KEY + roomId);
+        Object o = redisTemplate.opsForValue().get(QUESTION_KEY.formatted(roomId));
         return o == null ? null : objectMapper.convertValue(o, new TypeReference<List<QuestionDto>>() {});
     }
 
     public void setQuestions(Long roomId, List<QuestionDto> questions) {
-        redisTemplate.opsForValue().set(QUESTION_KEY + roomId, questions);
+        redisTemplate.opsForValue().set(QUESTION_KEY.formatted(roomId), questions);
     }
 
     public void deleteQuestions(Long roomId) {
-        redisTemplate.delete(QUESTION_KEY + roomId);
+        redisTemplate.delete(QUESTION_KEY.formatted(roomId));
     }
 
 }
