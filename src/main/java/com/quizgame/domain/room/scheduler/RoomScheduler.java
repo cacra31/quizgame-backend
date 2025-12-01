@@ -1,6 +1,6 @@
 package com.quizgame.domain.room.scheduler;
 
-import com.quizgame.domain.game.service.GameScheduler;
+import com.quizgame.domain.game.scheduler.GameScheduler;
 import com.quizgame.domain.room.api.v1.dto.RoomDto;
 import com.quizgame.domain.room.redis.RoomRedisService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +32,10 @@ public class RoomScheduler {
 
     private void handleStart(Long roomId) {
         RoomDto room = roomRedisService.getRoom(roomId);
-        roomRedisService.deleteWaitingRoom(room.categoryId());
+        if (Objects.equals(roomRedisService.getWaitingRoom(room.categoryId()), room.roomId())) {
+            roomRedisService.deleteWaitingRoom(room.categoryId());
+        }
         messagingTemplate.convertAndSend("/topic/room-list", "changed");
-        //gameScheduler.startGame(roomId);
+        gameScheduler.startGame(roomId);
     }
 }

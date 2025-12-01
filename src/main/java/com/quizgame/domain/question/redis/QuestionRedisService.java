@@ -9,6 +9,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.quizgame.global.constant.RedisKey.QUESTION_KEY;
 
@@ -26,7 +27,7 @@ public class QuestionRedisService {
     }
 
     public void setQuestions(Long roomId, List<QuestionDto> questions) {
-        redisTemplate.opsForValue().set(QUESTION_KEY.formatted(roomId), questions);
+        redisTemplate.opsForValue().set(QUESTION_KEY.formatted(roomId), questions, 20, TimeUnit.MINUTES);
     }
 
     public void deleteQuestions(Long roomId) {

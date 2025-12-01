@@ -12,6 +12,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.quizgame.global.constant.WebsocketTopic.ROOM_USERS_TOPIC;
@@ -29,16 +30,18 @@ public class LeaveRoomService {
         Long userUuid = sessionUser.id();
         // 유저가 입장한 방 확인
         Long roomId = userRedisService.getRoomUser(userUuid);
-        if(roomId == null) {
+        if (roomId == null) {
             throw new QuizGameException(SystemMessageCode.NOT_IN_ROOM);
         }
         RoomDto room = roomRedisService.getRoom(roomId);
         Set<Long> users = new HashSet<>(room.users());
         users.remove(userUuid);
         userRedisService.deleteRoomUser(userUuid);
-        if (users.isEmpty()){
+        if (users.isEmpty()) {
             roomRedisService.deleteRoom(room.roomId());
-            roomRedisService.deleteWaitingRoom(room.categoryId());
+            if (Objects.equals(roomRedisService.getWaitingRoom(room.categoryId()), room.roomId())) {
+                roomRedisService.deleteWaitingRoom(room.categoryId());
+            }
         } else {
             // 남은 유저가 있으면 방 정보 업데이트
             RoomDto updated = RoomDto.builder()

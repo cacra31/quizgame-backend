@@ -13,11 +13,13 @@ import com.quizgame.domain.room.api.v1.dto.RoomDto;
 import com.quizgame.global.code.SystemMessageCode;
 import com.quizgame.global.exception.QuizGameException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GenerateQuestionService {
@@ -88,7 +90,9 @@ public class GenerateQuestionService {
                     }
             );
             questionRedisService.setQuestions(roomDto.roomId(), questions);
+            log.info("AI 문제 생성 완료 : {}",questions);
         } catch (JsonProcessingException e) {
+            System.out.println("text = " + text);
             throw new QuizGameException(SystemMessageCode.INTERNAL_SERVER_ERROR);
         }
     }

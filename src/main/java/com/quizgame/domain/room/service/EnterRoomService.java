@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static com.quizgame.global.constant.GlobalConst.MAX_PLAYER;
@@ -83,7 +84,9 @@ public class EnterRoomService {
             users.add(sessionUser.id());
             // 가득 차면 대기방에서 제거
             if (users.size() == room.maxPlayers()) {
-                roomRedisService.deleteWaitingRoom(room.categoryId());
+                if (Objects.equals(roomRedisService.getWaitingRoom(room.categoryId()), room.roomId())) {
+                    roomRedisService.deleteWaitingRoom(room.categoryId());
+                }
             }
 
             // 방정보 저장
