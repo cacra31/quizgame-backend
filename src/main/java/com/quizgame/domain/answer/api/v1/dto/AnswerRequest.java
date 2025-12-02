@@ -4,10 +4,8 @@ import lombok.Builder;
 
 @Builder
 public record AnswerRequest(
-        Long questionId,
-        Long categoryId,
-        String answer,
-        int orderNo,
-        String correctYn
+        Long roomId,
+        int index,
+        String answer
 ) {
 }

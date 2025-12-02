@@ -9,4 +9,13 @@ public record AnswerDto(
         String answer,
         boolean correctYn
 ) {
+
+    public AnswerDto removeCorrectYn(){
+        return AnswerDto.builder()
+                .answerId(this.answerId)
+                .questionId(this.questionId)
+                .answer(this.answer)
+                .build();
+    }
+
 }

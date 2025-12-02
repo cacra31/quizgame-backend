@@ -76,6 +76,8 @@ public class GenerateQuestionService {
                         - 반드시 JSON 배열만 출력한다.
                         - JSON 외의 설명 텍스트를 절대 포함하지 마라.
                         - ```json 같은 마크다운 코드는 사용하지 마라.
+                        - escape 문자는 사용하지 마라.
+                        - JsonProcessingException 을 발생시키지 마라.
 
                         이제 위의 형식에 맞는 퀴즈를 생성해라.
                         """.formatted(count, topic))
@@ -92,10 +94,10 @@ public class GenerateQuestionService {
             questionRedisService.setQuestions(roomDto.roomId(), questions);
             log.info("AI 문제 생성 완료 : {}",questions);
         } catch (JsonProcessingException e) {
+            e.printStackTrace();
             System.out.println("text = " + text);
             throw new QuizGameException(SystemMessageCode.INTERNAL_SERVER_ERROR);
         }
     }
-
 
 }

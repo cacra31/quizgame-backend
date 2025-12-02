@@ -11,6 +11,28 @@ public record QuestionDto(
         Long questionId,
         String content,
         int difficulty,
+        int questionType,
         List<AnswerDto> answers
 ) {
+    public QuestionDto removeAnswers() {
+        return QuestionDto.builder()
+                .categoryId(this.categoryId)
+                .questionId(this.questionId)
+                .content(this.content)
+                .difficulty(this.difficulty)
+                .questionType(this.questionType)
+                .answers(List.of())
+                .build();
+    }
+
+    public QuestionDto removeCorrectYn() {
+        return QuestionDto.builder()
+                .categoryId(this.categoryId)
+                .questionId(this.questionId)
+                .content(this.content)
+                .difficulty(this.difficulty)
+                .questionType(this.questionType)
+                .answers(this.answers.stream().map(AnswerDto::removeCorrectYn).toList())
+                .build();
+    }
 }
