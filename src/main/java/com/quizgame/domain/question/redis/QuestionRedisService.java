@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 import static com.quizgame.global.constant.RedisKey.QUESTION_KEY;
 
-@Service
 @Slf4j
+@Service
 @RequiredArgsConstructor
 public class QuestionRedisService {
 

@@ -73,8 +73,6 @@ public class EnterRoomService {
             roomRedisService.setWaitingRoom(category.getId(), room.roomId());
             // 60초 뒤 시작 Task 예약
             roomScheduler.registerStartTask(room.roomId(), room.createdAt());
-            // 문제 생성
-            generateQuestionService.generateQuestion(room);
         } else {
             // 이미 방 있을 경우 최대인원 확인
             Set<Long> users = new HashSet<>(room.users());

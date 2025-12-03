@@ -7,17 +7,19 @@ import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
+import com.quizgame.domain.answer.api.v1.dto.AnswerDto;
 import com.quizgame.domain.question.api.v1.dto.QuestionDto;
 import com.quizgame.domain.question.redis.QuestionRedisService;
 import com.quizgame.domain.room.api.v1.dto.RoomDto;
-import com.quizgame.global.code.SystemMessageCode;
-import com.quizgame.global.exception.QuizGameException;
+import com.quizgame.global.redis.RedisSequenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -26,9 +28,10 @@ public class GenerateQuestionService {
 
     private final ObjectMapper objectMapper;
     private final QuestionRedisService questionRedisService;
+    private final RedisSequenceService redisSequenceService;
 
     @Async
-    public void generateQuestion(RoomDto roomDto) {
+    public CompletableFuture<Boolean> generateQuestion(RoomDto roomDto) {
         OpenAIClient client = OpenAIOkHttpClient.builder()
                 .apiKey(System.getenv("OPENAI_API_KEY"))
                 .baseUrl("https://openrouter.ai/api/v1")
@@ -86,18 +89,48 @@ public class GenerateQuestionService {
         Response response = client.responses().create(params);
         String text = response.output().get(1).asMessage().content().get(0).outputText().orElseThrow().text();
         try {
-            List<QuestionDto> questions = objectMapper.readValue(
+            List<QuestionDto> parsedQuestions = objectMapper.readValue(
                     text,
                     new TypeReference<List<QuestionDto>>() {
                     }
             );
+            ArrayList<QuestionDto> questions = new ArrayList<>();
+            for (QuestionDto questionDto : parsedQuestions) {
+                long questionId = redisSequenceService.nextQuestionId();
+                List<AnswerDto> parsedAnswers = questionDto.answers();
+                ArrayList<AnswerDto> answers = new ArrayList<>();
+                for (AnswerDto answer : parsedAnswers) {
+                    answers.add(
+                            AnswerDto.builder()
+                                    .answerId(redisSequenceService.nextAnswerId())
+                                    .questionId(questionId)
+                                    .answer(answer.answer())
+                                    .correctYn(answer.correctYn())
+                                    .build()
+                    );
+                }
+                questions.add(
+                        QuestionDto.builder()
+                                .categoryId(roomDto.categoryId())
+                                .questionId(questionId)
+                                .content(questionDto.content())
+                                .difficulty(questionDto.difficulty())
+                                .questionType(questionDto.questionType())
+                                .answers(answers)
+                                .build()
+                );
+            }
+
             questionRedisService.setQuestions(roomDto.roomId(), questions);
-            log.info("AI 문제 생성 완료 : {}",questions);
+
+            log.info("AI 문제 생성 완료 : {}", questions);
+            return CompletableFuture.completedFuture(true);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            System.out.println("text = " + text);
-            throw new QuizGameException(SystemMessageCode.INTERNAL_SERVER_ERROR);
+            log.info("AI 문제 생성 실패 : {}", text);
+            return CompletableFuture.completedFuture(false);
         }
+
+
     }
 
 }
