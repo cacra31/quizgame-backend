@@ -32,10 +32,7 @@ public class SessionUtil implements Serializable {
      */
     public static Object getAttribute(String name) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes != null) {
-            return requestAttributes.getAttribute(name, RequestAttributes.SCOPE_SESSION);
-        }
-        return null;
+        return requestAttributes.getAttribute(name, RequestAttributes.SCOPE_SESSION);
     }
 
     /**
@@ -46,11 +43,7 @@ public class SessionUtil implements Serializable {
      */
     public static void setAttribute(String name, Object object) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        if (requestAttributes != null) {
-            requestAttributes.setAttribute(name, object, RequestAttributes.SCOPE_SESSION);
-        } else {
-            throw new IllegalStateException("No request context available. Cannot set session attribute: " + name);
-        }
+        requestAttributes.setAttribute(name, object, RequestAttributes.SCOPE_SESSION);
     }
 
     public static void removeAttribute(String name) {

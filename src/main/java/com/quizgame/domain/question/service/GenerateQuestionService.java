@@ -32,6 +32,7 @@ public class GenerateQuestionService {
 
     @Async
     public CompletableFuture<Boolean> generateQuestion(RoomDto roomDto) {
+        log.info("AI 문제 생성 시작");
         OpenAIClient client = OpenAIOkHttpClient.builder()
                 .apiKey(System.getenv("OPENAI_API_KEY"))
                 .baseUrl("https://openrouter.ai/api/v1")
@@ -41,7 +42,7 @@ public class GenerateQuestionService {
         int count = 3;
 
         ResponseCreateParams params = ResponseCreateParams.builder()
-                .model("x-ai/grok-4.1-fast:free")
+                .model("deepseek/deepseek-r1-0528:free")
                 .input("""
                         너는 퀴즈 출제 AI다.
 
@@ -77,16 +78,17 @@ public class GenerateQuestionService {
 
                         출력 형식 규칙 (매우 중요):
                         - 반드시 JSON 배열만 출력한다.
+                        - 임의의 다른 필드를 포함하지 마라.
                         - JSON 외의 설명 텍스트를 절대 포함하지 마라.
                         - ```json 같은 마크다운 코드는 사용하지 마라.
                         - escape 문자는 사용하지 마라.
-                        - JsonProcessingException 을 발생시키지 마라.
 
                         이제 위의 형식에 맞는 퀴즈를 생성해라.
                         """.formatted(count, topic))
                 .build();
 
         Response response = client.responses().create(params);
+        log.info("AI 응답 완료 : {}", response);
         String text = response.output().get(1).asMessage().content().get(0).outputText().orElseThrow().text();
         try {
             List<QuestionDto> parsedQuestions = objectMapper.readValue(
@@ -129,7 +131,6 @@ public class GenerateQuestionService {
             log.info("AI 문제 생성 실패 : {}", text);
             return CompletableFuture.completedFuture(false);
         }
-
 
     }
 
